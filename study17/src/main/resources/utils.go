@@ -31,3 +31,37 @@ func CapitalizeWords(s string) string {
 	}
 	return strings.Join(words, " ")
 }
+package utils
+
+import (
+	"strings"
+	"unicode"
+)
+
+// ReverseString returns the reverse of the input string
+func ReverseString(s string) string {
+	runes := []rune(s)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+	return string(runes)
+}
+
+// CapitalizeWords capitalizes the first letter of each word in a string
+func CapitalizeWords(s string) string {
+	words := strings.Fields(s)
+	for i, word := range words {
+		if len(word) > 0 {
+			runes := []rune(word)
+			runes[0] = unicode.ToUpper(runes[0])
+			words[i] = string(runes)
+		}
+	}
+	return strings.Join(words, " ")
+}
+
+// IsPalindrome checks if a string reads the same forwards and backwards
+func IsPalindrome(s string) bool {
+	cleaned := strings.ToLower(strings.Join(strings.Fields(s), ""))
+	return cleaned == ReverseString(cleaned)
+}
