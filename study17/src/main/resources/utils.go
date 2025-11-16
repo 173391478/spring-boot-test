@@ -99,3 +99,43 @@ func Factorial(n int) int {
     }
     return n * Factorial(n-1)
 }
+package utils
+
+import (
+	"strings"
+	"unicode/utf8"
+)
+
+// TrimSpace removes all leading and trailing white space characters
+func TrimSpace(s string) string {
+	return strings.TrimSpace(s)
+}
+
+// PadLeft pads the string on the left with the specified pad string to the given length
+func PadLeft(s string, length int, pad string) string {
+	if utf8.RuneCountInString(s) >= length {
+		return s
+	}
+	
+	padding := strings.Repeat(pad, length-utf8.RuneCountInString(s))
+	return padding + s
+}
+
+// PadRight pads the string on the right with the specified pad string to the given length
+func PadRight(s string, length int, pad string) string {
+	if utf8.RuneCountInString(s) >= length {
+		return s
+	}
+	
+	padding := strings.Repeat(pad, length-utf8.RuneCountInString(s))
+	return s + padding
+}
+
+// Reverse reverses the input string
+func Reverse(s string) string {
+	runes := []rune(s)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+	return string(runes)
+}
