@@ -88,3 +88,14 @@ func FormatTimestamp(t time.Time) string {
 func ParseTimestamp(timestamp string) (time.Time, error) {
 	return time.Parse(time.RFC3339, timestamp)
 }
+package utils
+
+func Factorial(n int) int {
+    if n < 0 {
+        return -1
+    }
+    if n == 0 {
+        return 1
+    }
+    return n * Factorial(n-1)
+}
