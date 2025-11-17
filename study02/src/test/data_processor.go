@@ -270,3 +270,74 @@ func main() {
         fmt.Println(email)
     }
 }
+package main
+
+import (
+    "fmt"
+    "strings"
+)
+
+type DataRecord struct {
+    ID    int
+    Name  string
+    Email string
+    Age   int
+}
+
+type DataProcessor struct {
+    records []DataRecord
+}
+
+func NewDataProcessor() *DataProcessor {
+    return &DataProcessor{
+        records: make([]DataRecord, 0),
+    }
+}
+
+func (dp *DataProcessor) AddRecord(record DataRecord) {
+    dp.records = append(dp.records, record)
+}
+
+func (dp *DataProcessor) FilterByAge(minAge, maxAge int) []DataRecord {
+    var filtered []DataRecord
+    for _, record := range dp.records {
+        if record.Age >= minAge && record.Age <= maxAge {
+            filtered = append(filtered, record)
+        }
+    }
+    return filtered
+}
+
+func (dp *DataProcessor) TransformEmails(domain string) []DataRecord {
+    transformed := make([]DataRecord, len(dp.records))
+    for i, record := range dp.records {
+        transformed[i] = record
+        if !strings.Contains(record.Email, "@") {
+            transformed[i].Email = record.Email + "@" + domain
+        }
+    }
+    return transformed
+}
+
+func (dp *DataProcessor) GetRecordCount() int {
+    return len(dp.records)
+}
+
+func main() {
+    processor := NewDataProcessor()
+    
+    processor.AddRecord(DataRecord{ID: 1, Name: "John", Email: "john", Age: 25})
+    processor.AddRecord(DataRecord{ID: 2, Name: "Jane", Email: "jane@example.com", Age: 30})
+    processor.AddRecord(DataRecord{ID: 3, Name: "Bob", Email: "bob", Age: 35})
+    
+    fmt.Printf("Total records: %d\n", processor.GetRecordCount())
+    
+    filtered := processor.FilterByAge(26, 40)
+    fmt.Printf("Records between 26-40: %d\n", len(filtered))
+    
+    transformed := processor.TransformEmails("default.com")
+    for _, record := range transformed {
+        fmt.Printf("ID: %d, Name: %s, Email: %s, Age: %d\n", 
+            record.ID, record.Name, record.Email, record.Age)
+    }
+}
