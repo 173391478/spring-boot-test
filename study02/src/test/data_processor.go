@@ -195,3 +195,78 @@ func main() {
         }
     }
 }
+package main
+
+import (
+    "fmt"
+    "strings"
+)
+
+type DataRecord struct {
+    ID    int
+    Name  string
+    Email string
+    Active bool
+}
+
+type DataProcessor struct {
+    records []DataRecord
+}
+
+func NewDataProcessor() *DataProcessor {
+    return &DataProcessor{
+        records: make([]DataRecord, 0),
+    }
+}
+
+func (dp *DataProcessor) AddRecord(record DataRecord) {
+    dp.records = append(dp.records, record)
+}
+
+func (dp *DataProcessor) FilterActive() []DataRecord {
+    var active []DataRecord
+    for _, record := range dp.records {
+        if record.Active {
+            active = append(active, record)
+        }
+    }
+    return active
+}
+
+func (dp *DataProcessor) TransformEmails(domain string) []string {
+    var emails []string
+    for _, record := range dp.records {
+        if record.Active && record.Email != "" {
+            transformed := strings.ToLower(record.Email)
+            if !strings.Contains(transformed, "@") {
+                transformed = transformed + "@" + domain
+            }
+            emails = append(emails, transformed)
+        }
+    }
+    return emails
+}
+
+func (dp *DataProcessor) GetRecordCount() int {
+    return len(dp.records)
+}
+
+func main() {
+    processor := NewDataProcessor()
+    
+    processor.AddRecord(DataRecord{1, "John Doe", "john@example.com", true})
+    processor.AddRecord(DataRecord{2, "Jane Smith", "jane.smith", true})
+    processor.AddRecord(DataRecord{3, "Bob Wilson", "bob@test.org", false})
+    processor.AddRecord(DataRecord{4, "Alice Brown", "", true})
+    
+    fmt.Printf("Total records: %d\n", processor.GetRecordCount())
+    
+    active := processor.FilterActive()
+    fmt.Printf("Active records: %d\n", len(active))
+    
+    emails := processor.TransformEmails("default.com")
+    fmt.Println("Processed emails:")
+    for _, email := range emails {
+        fmt.Println(email)
+    }
+}
