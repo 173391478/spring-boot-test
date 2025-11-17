@@ -104,3 +104,94 @@ func main() {
 		fmt.Printf("ID: %d, Name: %s, Value: %.2f\n", record.ID, record.Name, record.Value)
 	}
 }
+package main
+
+import (
+    "errors"
+    "fmt"
+    "strings"
+)
+
+type DataRecord struct {
+    ID    int
+    Name  string
+    Email string
+    Age   int
+}
+
+type ValidationRule func(DataRecord) error
+type Transformation func(DataRecord) DataRecord
+
+func ValidateEmail(record DataRecord) error {
+    if !strings.Contains(record.Email, "@") {
+        return errors.New("invalid email format")
+    }
+    return nil
+}
+
+func ValidateAge(record DataRecord) error {
+    if record.Age < 18 || record.Age > 120 {
+        return errors.New("age must be between 18 and 120")
+    }
+    return nil
+}
+
+func TransformEmailToLower(record DataRecord) DataRecord {
+    record.Email = strings.ToLower(record.Email)
+    return record
+}
+
+func ProcessData(records []DataRecord, validators []ValidationRule, transformers []Transformation) ([]DataRecord, []error) {
+    var processed []DataRecord
+    var errors []error
+
+    for _, record := range records {
+        valid := true
+        for _, validator := range validators {
+            if err := validator(record); err != nil {
+                errors = append(errors, fmt.Errorf("record %d: %w", record.ID, err))
+                valid = false
+                break
+            }
+        }
+
+        if !valid {
+            continue
+        }
+
+        transformed := record
+        for _, transformer := range transformers {
+            transformed = transformer(transformed)
+        }
+        processed = append(processed, transformed)
+    }
+
+    return processed, errors
+}
+
+func main() {
+    records := []DataRecord{
+        {1, "John Doe", "JOHN@EXAMPLE.COM", 25},
+        {2, "Jane Smith", "jane.smith@test.org", 30},
+        {3, "Bob Wilson", "invalid-email", 17},
+        {4, "Alice Brown", "ALICE@DOMAIN.COM", 150},
+    }
+
+    validators := []ValidationRule{ValidateEmail, ValidateAge}
+    transformers := []Transformation{TransformEmailToLower}
+
+    processed, errs := ProcessData(records, validators, transformers)
+
+    fmt.Println("Processed records:")
+    for _, record := range processed {
+        fmt.Printf("ID: %d, Name: %s, Email: %s, Age: %d\n", 
+            record.ID, record.Name, record.Email, record.Age)
+    }
+
+    if len(errs) > 0 {
+        fmt.Println("\nValidation errors:")
+        for _, err := range errs {
+            fmt.Println(err)
+        }
+    }
+}
